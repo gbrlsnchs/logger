@@ -18,10 +18,11 @@ type Logger struct {
 func New(lvl Level, stdout, stderr io.Writer) *Logger {
 	// TODO: color logs.
 	l := &Logger{}
-	flag := log.Ldate | log.Lmicroseconds | log.Lshortfile
 	if lvl == LevelOff {
 		return l
 	}
+
+	flag := log.Ldate | log.Lmicroseconds | log.Lshortfile
 	if lvl&LevelFatal > 0 {
 		l.fatalLogger = log.New(stderr, "FATAL: ", flag)
 	}
