@@ -1,14 +1,14 @@
 package logger
 
-type Level int8
+type Level uint8
 
 const (
 	LevelOff   Level = 0
-	LevelFatal       = 1 << iota
+	LevelFatal Level = 1 << iota
 	LevelError
 	LevelWarn
 	LevelInfo
 	LevelDebug
 	LevelTrace
-	LevelAll = 255
+	LevelAll Level = 255
 )
