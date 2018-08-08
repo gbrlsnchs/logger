@@ -11,11 +11,11 @@ package logger
 //
 // For example, to turn only Fatal e Debug levels on,
 // the level should be set the following way:
-// 	l := logger.New(logger.LevelFatal | logger.LevelDebug, os.Stdout, os.Stderr)
+// 	l := logger.New(os.Stdout, os.Stderr, logger.LevelFatal|logger.LevelDebug)
 // To turn all levels off:
-// 	l := logger.New(logger.LevelOff, os.Stdout, os.Stderr)
+// 	l := logger.New(os.Stdout, os.Stderr, logger.LevelOff)
 // And to turn all on:
-// 	l := logger.New(logger.LevelAll, os.Stdout, os.Stderr)
+// 	l := logger.New(os.Stdout, os.Stderr, logger.LevelAll)
 const (
 	LevelOff   uint8 = 0
 	LevelAll   uint8 = 255
