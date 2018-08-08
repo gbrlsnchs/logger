@@ -3,7 +3,40 @@ package logger
 import (
 	"io"
 	"log"
+
+	"github.com/fatih/color"
 )
+
+// LevelOff alone turns all logs off.
+//
+// LevelAll turns all logs on whenever present in the
+// log level caculation.
+//
+// Log levels' bits are or'ed together,
+// so, regardless of the order they appear in the caculation,
+// if they're present in it, they're turned on.
+//
+// For example, to turn only Fatal e Debug levels on,
+// the level should be set the following way:
+// 	l := logger.New(os.Stdout, os.Stderr, logger.LevelFatal|logger.LevelDebug)
+// To turn all levels off:
+// 	l := logger.New(os.Stdout, os.Stderr, logger.LevelOff)
+// To turn all levels on:
+// 	l := logger.New(os.Stdout, os.Stderr, logger.LevelAll)
+// All but Debug:
+// 	l := logger.New(os.Stdout, os.Stderr, logger.LevelAll^logger.LevelDebug)
+const (
+	LevelOff   uint8 = 0
+	LevelAll   uint8 = 255
+	LevelFatal uint8 = 1 << iota
+	LevelError
+	LevelWarn
+	LevelInfo
+	LevelDebug
+	LevelTrace
+)
+
+var Flag = log.Ldate | log.Lmicroseconds | log.Lshortfile
 
 type Logger struct {
 	fatalLogger *log.Logger
@@ -22,24 +55,23 @@ func New(stdout, stderr io.Writer, lvl uint8) *Logger {
 		return l
 	}
 
-	flag := log.Ldate | log.Lmicroseconds | log.Lshortfile
 	if lvl&LevelFatal > 0 {
-		l.fatalLogger = log.New(stderr, "FATAL: ", flag)
+		l.fatalLogger = log.New(stderr, PrefixFatal, Flag)
 	}
 	if lvl&LevelError > 0 {
-		l.errLogger = log.New(stderr, "ERROR: ", flag)
+		l.errLogger = log.New(stderr, PrefixError, Flag)
 	}
 	if lvl&LevelWarn > 0 {
-		l.warnLogger = log.New(stderr, "WARNING: ", flag)
+		l.warnLogger = log.New(stderr, PrefixWarn, Flag)
 	}
 	if lvl&LevelInfo > 0 {
-		l.infoLogger = log.New(stdout, "INFO: ", flag)
+		l.infoLogger = log.New(stdout, PrefixInfo, Flag)
 	}
 	if lvl&LevelDebug > 0 {
-		l.debugLogger = log.New(stdout, "DEBUG: ", flag)
+		l.debugLogger = log.New(stdout, PrefixDebug, Flag)
 	}
 	if lvl&LevelTrace > 0 {
-		l.traceLogger = log.New(stdout, "TRACE: ", flag)
+		l.traceLogger = log.New(stdout, PrefixTrace, Flag)
 	}
 	return l
 }
@@ -63,6 +95,10 @@ func (l *Logger) Debugln(v ...interface{}) {
 		return
 	}
 	l.debugLogger.Println(v...)
+}
+
+func (l *Logger) DisableColor() {
+	color.NoColor = true
 }
 
 func (l *Logger) Error(v ...interface{}) {
