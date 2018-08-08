@@ -49,7 +49,6 @@ type Logger struct {
 
 // New creates a new logger according to the log level.
 func New(stdout, stderr io.Writer, lvl uint8) *Logger {
-	// TODO: color logs.
 	l := &Logger{}
 	if lvl == LevelOff {
 		return l
