@@ -10,5 +10,5 @@ const (
 	LevelInfo
 	LevelDebug
 	LevelTrace
-	LevelAll
+	LevelAll = 255
 )
