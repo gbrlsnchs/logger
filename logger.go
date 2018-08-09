@@ -3,8 +3,6 @@ package logger
 import (
 	"io"
 	"log"
-
-	"github.com/fatih/color"
 )
 
 // LevelOff alone turns all logs off.
@@ -18,25 +16,32 @@ import (
 //
 // For example, to turn only Fatal e Debug levels on,
 // the level should be set the following way:
-// 	l := logger.New(os.Stdout, os.Stderr, logger.LevelFatal|logger.LevelDebug)
+// 	l := logger.New(os.Stdout, os.Stderr, log.LstdFlags, logger.LevelFatal|logger.LevelDebug)
 // To turn all levels off:
-// 	l := logger.New(os.Stdout, os.Stderr, logger.LevelOff)
+// 	l := logger.New(os.Stdout, os.Stderr, log.LstdFlags, logger.LevelOff)
 // To turn all levels on:
-// 	l := logger.New(os.Stdout, os.Stderr, logger.LevelAll)
+// 	l := logger.New(os.Stdout, os.Stderr, log.LstdFlags, logger.LevelAll)
 // All but Debug:
-// 	l := logger.New(os.Stdout, os.Stderr, logger.LevelAll^logger.LevelDebug)
+// 	l := logger.New(os.Stdout, os.Stderr, log.LstdFlags, logger.LevelAll^logger.LevelDebug)
 const (
-	LevelOff   uint8 = 0
-	LevelAll   uint8 = 255
-	LevelFatal uint8 = 1 << iota
+	LevelOff uint8 = 1 << iota
+	LevelFatal
 	LevelError
 	LevelWarn
 	LevelInfo
 	LevelDebug
 	LevelTrace
+	LevelAll uint8 = 254
 )
 
-var Flag = log.Ldate | log.Lmicroseconds | log.Lshortfile
+var (
+	PrefixFatal string
+	PrefixError string
+	PrefixWarn  string
+	PrefixInfo  string
+	PrefixDebug string
+	PrefixTrace string
+)
 
 type Logger struct {
 	fatalLogger *log.Logger
@@ -45,33 +50,19 @@ type Logger struct {
 	infoLogger  *log.Logger
 	debugLogger *log.Logger
 	traceLogger *log.Logger
+	stdout      io.Writer
+	stderr      io.Writer
+	flag        int
 }
 
 // New creates a new logger according to the log level.
-func New(stdout, stderr io.Writer, lvl uint8) *Logger {
-	l := &Logger{}
-	if lvl == LevelOff {
-		return l
+func New(stdout, stderr io.Writer, flag int, lvl uint8) *Logger {
+	l := &Logger{
+		stdout: stdout,
+		stderr: stderr,
+		flag:   flag,
 	}
-
-	if lvl&LevelFatal > 0 {
-		l.fatalLogger = log.New(stderr, PrefixFatal, Flag)
-	}
-	if lvl&LevelError > 0 {
-		l.errLogger = log.New(stderr, PrefixError, Flag)
-	}
-	if lvl&LevelWarn > 0 {
-		l.warnLogger = log.New(stderr, PrefixWarn, Flag)
-	}
-	if lvl&LevelInfo > 0 {
-		l.infoLogger = log.New(stdout, PrefixInfo, Flag)
-	}
-	if lvl&LevelDebug > 0 {
-		l.debugLogger = log.New(stdout, PrefixDebug, Flag)
-	}
-	if lvl&LevelTrace > 0 {
-		l.traceLogger = log.New(stdout, PrefixTrace, Flag)
-	}
+	l.SetLevel(lvl)
 	return l
 }
 
@@ -94,10 +85,6 @@ func (l *Logger) Debugln(v ...interface{}) {
 		return
 	}
 	l.debugLogger.Println(v...)
-}
-
-func (l *Logger) DisableColor() {
-	color.NoColor = true
 }
 
 func (l *Logger) Error(v ...interface{}) {
@@ -161,6 +148,28 @@ func (l *Logger) Infoln(format string, v ...interface{}) {
 		return
 	}
 	l.infoLogger.Println(v...)
+}
+
+func (l *Logger) SetLevel(lvl uint8) {
+	if lvl&LevelOff > 0 {
+		return
+	}
+	l.fatalLogger = build(lvl&LevelFatal, l.stderr, PrefixFatal, l.flag)
+	l.errLogger = build(lvl&LevelError, l.stderr, PrefixError, l.flag)
+	l.warnLogger = build(lvl&LevelWarn, l.stderr, PrefixWarn, l.flag)
+	l.infoLogger = build(lvl&LevelInfo, l.stdout, PrefixInfo, l.flag)
+	l.debugLogger = build(lvl&LevelDebug, l.stdout, PrefixDebug, l.flag)
+	l.traceLogger = build(lvl&LevelTrace, l.stdout, PrefixTrace, l.flag)
+}
+
+// Stderr returns the writer for error logs.
+func (l *Logger) Stderr() io.Writer {
+	return l.stderr
+}
+
+// Stdout returns the writer for ordinary logs.
+func (l *Logger) Stdout() io.Writer {
+	return l.stdout
 }
 
 func (l *Logger) Trace(v ...interface{}) {
