@@ -152,6 +152,7 @@ func (l *Logger) Infoln(v ...interface{}) {
 
 func (l *Logger) SetLevel(lvl uint8) {
 	if lvl&LevelOff > 0 {
+		l.SetLevel(0)
 		return
 	}
 	l.fatalLogger = build(lvl&LevelFatal, l.stderr, PrefixFatal, l.flag)
