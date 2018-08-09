@@ -143,7 +143,7 @@ func (l *Logger) Infof(format string, v ...interface{}) {
 	l.infoLogger.Printf(format, v...)
 }
 
-func (l *Logger) Infoln(format string, v ...interface{}) {
+func (l *Logger) Infoln(v ...interface{}) {
 	if l.infoLogger == nil {
 		return
 	}
