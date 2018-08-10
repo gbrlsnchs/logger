@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"strconv"
@@ -27,8 +28,7 @@ const (
 var currentLvl uint8
 
 func TestLogger(t *testing.T) {
-	var stdout strings.Builder
-	var stderr strings.Builder
+	var stdout, stderr strings.Builder
 	l := New(&stdout, &stderr, 0, LevelOff)
 	fatalFunc := func(runFlag string) func(v ...interface{}) {
 		return func(v ...interface{}) {
@@ -134,6 +134,15 @@ func TestFatalf(t *testing.T) {
 func TestFatalln(t *testing.T) {
 	l, txt := fatalHelper(t)
 	l.Fatalln(txt)
+}
+
+func TestCaller(t *testing.T) {
+	var stdout, stderr strings.Builder
+	l := New(&stdout, &stderr, log.Lshortfile, LevelDebug)
+	l.Debug("")
+	if want, got := "logger_test.go:142: \n", stdout.String(); want != got {
+		t.Errorf("want %s, got %s", want, got)
+	}
 }
 
 func fatalHelper(t *testing.T) (*Logger, string) {

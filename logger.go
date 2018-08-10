@@ -1,8 +1,10 @@
 package logger
 
 import (
+	"fmt"
 	"io"
 	"log"
+	"os"
 )
 
 // LevelOff alone turns all logs off.
@@ -70,84 +72,87 @@ func (l *Logger) Debug(v ...interface{}) {
 	if l.debugLogger == nil {
 		return
 	}
-	l.debugLogger.Print(v...)
+	l.debugLogger.Output(2, fmt.Sprint(v...))
 }
 
 func (l *Logger) Debugf(format string, v ...interface{}) {
 	if l.debugLogger == nil {
 		return
 	}
-	l.debugLogger.Printf(format, v...)
+	l.debugLogger.Output(2, fmt.Sprintf(format, v...))
 }
 
 func (l *Logger) Debugln(v ...interface{}) {
 	if l.debugLogger == nil {
 		return
 	}
-	l.debugLogger.Println(v...)
+	l.debugLogger.Output(2, fmt.Sprintln(v...))
 }
 
 func (l *Logger) Error(v ...interface{}) {
 	if l.errLogger == nil {
 		return
 	}
-	l.errLogger.Print(v...)
+	l.errLogger.Output(2, fmt.Sprint(v...))
 }
 
 func (l *Logger) Errorf(format string, v ...interface{}) {
 	if l.errLogger == nil {
 		return
 	}
-	l.errLogger.Printf(format, v...)
+	l.errLogger.Output(2, fmt.Sprintf(format, v...))
 }
 
 func (l *Logger) Errorln(v ...interface{}) {
 	if l.errLogger == nil {
 		return
 	}
-	l.errLogger.Println(v...)
+	l.errLogger.Output(2, fmt.Sprintln(v...))
 }
 
 func (l *Logger) Fatal(v ...interface{}) {
 	if l.fatalLogger == nil {
 		return
 	}
-	l.fatalLogger.Fatal(v...)
+	l.fatalLogger.Output(2, fmt.Sprint(v...))
+	os.Exit(1)
 }
 
 func (l *Logger) Fatalf(format string, v ...interface{}) {
 	if l.fatalLogger == nil {
 		return
 	}
-	l.fatalLogger.Fatalf(format, v...)
+	l.fatalLogger.Output(2, fmt.Sprintf(format, v...))
+	os.Exit(1)
 }
 
 func (l *Logger) Fatalln(v ...interface{}) {
 	if l.fatalLogger == nil {
 		return
 	}
-	l.fatalLogger.Fatalln(v...)
+	l.fatalLogger.Output(2, fmt.Sprintln(v...))
+	os.Exit(1)
 }
 
 func (l *Logger) Info(v ...interface{}) {
 	if l.infoLogger == nil {
 		return
 	}
-	l.infoLogger.Print(v...)
+	l.infoLogger.Output(2, fmt.Sprint(v...))
 }
 
 func (l *Logger) Infof(format string, v ...interface{}) {
 	if l.infoLogger == nil {
 		return
 	}
-	l.infoLogger.Printf(format, v...)
+	l.infoLogger.Output(2, fmt.Sprintf(format, v...))
 }
 
 func (l *Logger) Infoln(v ...interface{}) {
 	if l.infoLogger == nil {
 		return
 	}
-	l.infoLogger.Println(v...)
+	l.infoLogger.Output(2, fmt.Sprintln(v...))
 }
 
 func (l *Logger) SetLevel(lvl uint8) {
@@ -177,40 +182,40 @@ func (l *Logger) Trace(v ...interface{}) {
 	if l.traceLogger == nil {
 		return
 	}
-	l.traceLogger.Print(v...)
+	l.traceLogger.Output(2, fmt.Sprint(v...))
 }
 
 func (l *Logger) Tracef(format string, v ...interface{}) {
 	if l.traceLogger == nil {
 		return
 	}
-	l.traceLogger.Printf(format, v...)
+	l.traceLogger.Output(2, fmt.Sprintf(format, v...))
 }
 
 func (l *Logger) Traceln(v ...interface{}) {
 	if l.traceLogger == nil {
 		return
 	}
-	l.traceLogger.Println(v...)
+	l.traceLogger.Output(2, fmt.Sprintln(v...))
 }
 
 func (l *Logger) Warn(v ...interface{}) {
 	if l.warnLogger == nil {
 		return
 	}
-	l.warnLogger.Print(v...)
+	l.warnLogger.Output(2, fmt.Sprint(v...))
 }
 
 func (l *Logger) Warnf(format string, v ...interface{}) {
 	if l.warnLogger == nil {
 		return
 	}
-	l.warnLogger.Printf(format, v...)
+	l.warnLogger.Output(2, fmt.Sprintf(format, v...))
 }
 
 func (l *Logger) Warnln(v ...interface{}) {
 	if l.warnLogger == nil {
 		return
 	}
-	l.warnLogger.Println(v...)
+	l.warnLogger.Output(2, fmt.Sprintln(v...))
 }
