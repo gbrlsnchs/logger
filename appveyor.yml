@@ -15,9 +15,9 @@ test_script:
   - 'set GOROOT=c:\go110'
   - '%GOROOT%\bin\go.exe get -u golang.org/x/vgo'
   - 'cd c:\test'
-  - '%GOROOT%\bin\go.exe build -o testdata\fatal\fatal.exe testdata\fatal\fatal.go'
-  - '%GOROOT%\bin\go.exe build -o testdata\fatalf\fatalf.exe testdata\fatalf\fatalf.go'
-  - '%GOROOT%\bin\go.exe build -o testdata\fatalln\fatalln.exe testdata\fatalln\fatalln.go'
+  - '%GOPATH%\bin\vgo.exe build -o testdata\fatal\fatal.exe testdata\fatal\fatal.go'
+  - '%GOPATH%\bin\vgo.exe build -o testdata\fatalf\fatalf.exe testdata\fatalf\fatalf.go'
+  - '%GOPATH%\bin\vgo.exe build -o testdata\fatalln\fatalln.exe testdata\fatalln\fatalln.go'
   - '%GOPATH%\bin\vgo.exe test -ldflags="-linkmode=external" -v -race -count=10 ./...'
   # Go 1.11
   - 'set GOROOT=c:\go111'
