@@ -10,7 +10,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - README file.
 - MIT License.
 - CI configuration files.
-- Makefile.
 - Git ignore file.
 - EditorConfig file.
 - Source code.
