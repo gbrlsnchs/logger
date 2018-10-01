@@ -9,7 +9,7 @@ go:
   - '1.11'
   - 'tip'
 
-environment:
+env:
   - 'BIN=go'
   - 'GOVERSION=$(go version | awk ''{print $3}'')'
 install:
