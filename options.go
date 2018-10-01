@@ -9,12 +9,12 @@ type Options struct {
 	Stderr   io.Writer
 	Stdout   io.Writer
 	Flag     int
-	Level    Level
-	Prefixes map[Level]string
+	Level    int
+	Prefixes map[int]string
 }
 
-func (o *Options) build(lvl Level) *log.Logger {
-	if o.Level&LevelOff == 0 && o.Level&lvl > 0 {
+func (o *Options) build(lvl int) *log.Logger {
+	if o.Level&LevelOff == 0 && o.Level&lvl != 0 {
 		w := o.Stderr
 		if lvl >= LevelInfo {
 			w = o.Stdout
