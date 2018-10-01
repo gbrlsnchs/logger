@@ -10,9 +10,9 @@ go:
   - 'tip'
 
 env:
-  - 'BIN=go GOVERSION=$(go version | awk ''{print $3}'')'
+  - 'BIN=go'
 install:
-  - 'if [ "$GOVERSION" == "go1.10" ]; then go get -u golang.org/x/vgo && BIN=vgo; fi'
+  - 'if [ "$(go version | awk ''{print $3}'')" == "go1.10" ]; then go get -u golang.org/x/vgo && BIN=vgo; fi'
   - 'mkdir $HOME/test'
   - 'rsync -az $TRAVIS_BUILD_DIR/ $HOME/test/'
   # remove the project from GOPATH to mirror real use case
