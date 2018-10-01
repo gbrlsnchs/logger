@@ -1,8 +1,8 @@
 # logwrap (Log wrapper for Go)
-[![Build Status](https://travis-ci.org/gbrlsnchs/logger.svg?branch=master)](https://travis-ci.org/gbrlsnchs/logger)
+[![Build Status](https://travis-ci.org/gbrlsnchs/logwrap.svg?branch=master)](https://travis-ci.org/gbrlsnchs/logwrap)
 [![Build status](https://ci.appveyor.com/api/projects/status/ekck6k62bmrpdl8c/branch/master?svg=true)](https://ci.appveyor.com/project/gbrlsnchs/logwrap/branch/master)
-[![Sourcegraph](https://sourcegraph.com/github.com/gbrlsnchs/logger/-/badge.svg)](https://sourcegraph.com/github.com/gbrlsnchs/logger?badge)
-[![GoDoc](https://godoc.org/github.com/gbrlsnchs/logger?status.svg)](https://godoc.org/github.com/gbrlsnchs/logger)
+[![Sourcegraph](https://sourcegraph.com/github.com/gbrlsnchs/logwrap/-/badge.svg)](https://sourcegraph.com/github.com/gbrlsnchs/logwrap?badge)
+[![GoDoc](https://godoc.org/github.com/gbrlsnchs/logwrap?status.svg)](https://godoc.org/github.com/gbrlsnchs/logwrap)
 
 ## About
 This package is a log wrapper that supports the same log levels from [Log4j](https://logging.apache.org/log4j/).  
