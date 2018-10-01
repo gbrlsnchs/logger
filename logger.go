@@ -6,15 +6,6 @@ import (
 	"os"
 )
 
-var (
-	PrefixFatal string
-	PrefixError string
-	PrefixWarn  string
-	PrefixInfo  string
-	PrefixDebug string
-	PrefixTrace string
-)
-
 type Logger struct {
 	fatalLogger *log.Logger
 	errLogger   *log.Logger
