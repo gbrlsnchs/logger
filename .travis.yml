@@ -10,8 +10,7 @@ go:
   - 'tip'
 
 env:
-  - 'BIN=go'
-  - 'GOVERSION=$(go version | awk ''{print $3}'')'
+  - 'BIN=go GOVERSION=$(go version | awk ''{print $3}'')'
 install:
   - 'if [ "$GOVERSION" == "go1.10" ]; then go get -u golang.org/x/vgo && BIN=vgo; fi'
   - 'mkdir $HOME/test'
