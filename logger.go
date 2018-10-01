@@ -110,6 +110,12 @@ func (l *Logger) Infoln(v ...interface{}) {
 }
 
 func (l *Logger) Reset(opt *Options) {
+	if opt.Stderr == nil {
+		opt.Stderr = os.Stderr
+	}
+	if opt.Stdout == nil {
+		opt.Stdout = os.Stdout
+	}
 	if opt.Level == 0 {
 		opt.Level = LevelOff
 	}
