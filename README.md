@@ -1,50 +1,99 @@
-# logger (filtered-by-level logger for Go)
+# logwrap (Log wrapper for Go)
 [![Build Status](https://travis-ci.org/gbrlsnchs/logger.svg?branch=master)](https://travis-ci.org/gbrlsnchs/logger)
+[![Build status](https://ci.appveyor.com/api/projects/status/ekck6k62bmrpdl8c/branch/master?svg=true)](https://ci.appveyor.com/project/gbrlsnchs/logwrap/branch/master)
+[![Sourcegraph](https://sourcegraph.com/github.com/gbrlsnchs/logger/-/badge.svg)](https://sourcegraph.com/github.com/gbrlsnchs/logger?badge)
 [![GoDoc](https://godoc.org/github.com/gbrlsnchs/logger?status.svg)](https://godoc.org/github.com/gbrlsnchs/logger)
 
 ## About
-This package is a logger with level filtering.
+This package is a log wrapper that supports the same log levels from [Log4j](https://logging.apache.org/log4j/).  
+However, it doesn't impose a hierarchy, allowing levels to be cherry-picked through [bitwise operations](https://en.wikipedia.org/wiki/Bitwise_operation).
 
-### Supported levels:
-| Level | Enum                | Value      |
+| Level | Variable            | Value      |
 | ----- | ------------------- |:----------:|
-| OFF   | `logger.LevelOff`   | `00000001` |
-| FATAL | `logger.LevelFatal` | `00000010` |
-| ERROR | `logger.LevelError` | `00000100` |
-| WARN  | `logger.LevelWarn`  | `00001000` |
-| INFO  | `logger.LevelInfo`  | `00010000` |
-| DEBUG | `logger.LevelDebug` | `00100000` |
-| TRACE | `logger.LevelTrace` | `01000000` |
-| ALL   | `logger.LevelAll`   | `11111111` |
+| OFF   | `logwrap.LevelOff`   | `00000001` |
+| FATAL | `logwrap.LevelFatal` | `00000010` |
+| ERROR | `logwrap.LevelError` | `00000100` |
+| WARN  | `logwrap.LevelWarn`  | `00001000` |
+| INFO  | `logwrap.LevelInfo`  | `00010000` |
+| DEBUG | `logwrap.LevelDebug` | `00100000` |
+| TRACE | `logwrap.LevelTrace` | `01000000` |
+| ALL   | `logwrap.LevelAll`   | `11111111` |
 
 ## Usage
-Full documentation [here].
+Full documentation [here](https://godoc.org/github.com/gbrlsnchs/logwrap).
 
-## Example
-### Simple usage
+### Installing
+#### Go 1.10
+`vgo get -u github.com/gbrlsnchs/logwrap`
+#### Go 1.11
+`go get -u github.com/gbrlsnchs/logwrap`
+
+### Importing
 ```go
-l := logger.New(os.Stdout, os.Stderr, log.LstdFlags, logger.LevelAll)
-l.Trace("Hello", "World!")
-l.Debug("Hello World!")
-l.Info("Hello World!")
-l.Warn("Hello World!")
-l.Error("Hello World!")
-l.Fatal("Hello World!")
+import (
+	// ...
+
+	"github.com/gbrlsnchs/logwrap"
+)
 ```
 
-### Filter levels
+### Setting all levels on
 ```go
-l := logger.New(os.Stdout, os.Stderr, log.LstdFlags, logger.LevelError|logger.LevelDebug) // only Error and Debug levels will print
-l.Info("this will not be printed")
-
-l.SetLevel(logger.LevelAll^logger.LevelFatal) // all levels but Fatal
-l.Fatal("this will not exit the process")
+logger := logwrap.New(&logwrap.Options{
+	Stderr: os.Stderr,
+	Stdout: os.Stdout,
+	Flag:   log.LStdFlags,
+	Level:  logwrap.LevelAll,
+})
+logger.Trace("Hello World!")
+logger.Debug("Hello World!")
+logger.Info("Hello World!")
+logger.Warn("Hello World!")
+logger.Error("Hello World!")
+logger.Fatal("Hello World!")
 ```
 
-## Contribution
-### How to help:
-- Pull Requests
-- Issues
-- Opinions
+### Cherry-picking levels
+```go
+logger := logwrap.New(&logwrap.Options{
+	Stderr: os.Stderr,
+	Stdout: os.Stdout,
+	Flag:   log.LstdFlags,
+	Level:  logwrap.LevelError | logwrap.LevelDebug // only Error and Debug levels will print
+})
+logger.Info("this will not be printed")
+```
 
-[here]: https://godoc.org/github.com/gbrlsnchs/logger
+### Excluding a level
+```go
+logger := logwrap.New(&logwrap.Options{
+	Stderr: os.Stderr,
+	Stdout: os.Stdout,
+	Flag:   log.LstdFlags,
+	Level:  logwrap.LevelAll ^ logwrap.LevelFatal) // all levels but Fatal will print
+logger.Fatal("this will neither be printed nor exit the process")
+```
+
+### Setting custom prefixes
+```go
+logger := logwrap.New(&logwrap.Options{
+	Stderr: os.Stderr,
+	Stdout: os.Stdout,
+	Flag:   log.LstdFlags,
+	Level:  logwrap.LevelAll,
+	Prefixes: map[logwrap.Level]string{
+		logwrap.LevelFatal: "FATAL::",
+		logwrap.LevelError: "ERROR::",
+		logwrap.LevelWarn:  "WARN::",
+		logwrap.LevelInfo:  "INFO::",
+		logwrap.LevelDebug: "DEBUG::",
+		logwrap.LevelTrace: "TRACE::",
+	},
+})
+logger.Debug("Hello World!")
+```
+
+## Contributing
+### How to help
+- For bugs and opinions, please [open an issue](https://github.com/gbrlsnchs/logwrap/issues/new)
+- For pushing changes, please [open a pull request](https://github.com/gbrlsnchs/logwrap/compare)

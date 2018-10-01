@@ -1,4 +1,4 @@
-package logger_test
+package logwrap_test
 
 import (
 	"bufio"
@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/gbrlsnchs/logger"
+	. "github.com/gbrlsnchs/logwrap"
 )
 
 // Values end in a line feed because log package always
@@ -25,11 +25,15 @@ const (
 	TxtTrace = "TRACE"
 )
 
-var currentLvl uint8
+var currentLvl Level
 
 func TestLogger(t *testing.T) {
 	var stdout, stderr strings.Builder
-	l := New(&stdout, &stderr, 0, LevelOff)
+	logger := New(&Options{
+		Stderr: &stderr,
+		Stdout: &stdout,
+		Level:  LevelOff,
+	})
 	fatalFunc := func(runFlag string) func(v ...interface{}) {
 		return func(v ...interface{}) {
 			cmd := exec.Command("go", "test", runFlag, "-short")
@@ -56,23 +60,23 @@ func TestLogger(t *testing.T) {
 		txt    string
 		stdout string
 		stderr string
-		lvl    uint8
+		lvl    Level
 	}{
-		{l.Debug, TxtDebug, TxtDebug, "", LevelDebug},
-		{l.Debugln, TxtDebug, TxtDebug, "", LevelDebug},
-		{formatHelper(l.Debugf), TxtDebug, TxtDebug, "", LevelDebug},
-		{l.Error, TxtError, "", TxtError, LevelError},
-		{l.Errorln, TxtError, "", TxtError, LevelError},
-		{formatHelper(l.Errorf), TxtError, "", TxtError, LevelError},
-		{l.Info, TxtInfo, TxtInfo, "", LevelInfo},
-		{l.Infoln, TxtInfo, TxtInfo, "", LevelInfo},
-		{formatHelper(l.Infof), TxtInfo, TxtInfo, "", LevelInfo},
-		{l.Warn, TxtWarn, "", TxtWarn, LevelWarn},
-		{l.Warnln, TxtWarn, "", TxtWarn, LevelWarn},
-		{formatHelper(l.Warnf), TxtWarn, "", TxtWarn, LevelWarn},
-		{l.Trace, TxtTrace, TxtTrace, "", LevelTrace},
-		{l.Traceln, TxtTrace, TxtTrace, "", LevelTrace},
-		{formatHelper(l.Tracef), TxtTrace, TxtTrace, "", LevelTrace},
+		{logger.Debug, TxtDebug, TxtDebug, "", LevelDebug},
+		{logger.Debugln, TxtDebug, TxtDebug, "", LevelDebug},
+		{formatHelper(logger.Debugf), TxtDebug, TxtDebug, "", LevelDebug},
+		{logger.Error, TxtError, "", TxtError, LevelError},
+		{logger.Errorln, TxtError, "", TxtError, LevelError},
+		{formatHelper(logger.Errorf), TxtError, "", TxtError, LevelError},
+		{logger.Info, TxtInfo, TxtInfo, "", LevelInfo},
+		{logger.Infoln, TxtInfo, TxtInfo, "", LevelInfo},
+		{formatHelper(logger.Infof), TxtInfo, TxtInfo, "", LevelInfo},
+		{logger.Warn, TxtWarn, "", TxtWarn, LevelWarn},
+		{logger.Warnln, TxtWarn, "", TxtWarn, LevelWarn},
+		{formatHelper(logger.Warnf), TxtWarn, "", TxtWarn, LevelWarn},
+		{logger.Trace, TxtTrace, TxtTrace, "", LevelTrace},
+		{logger.Traceln, TxtTrace, TxtTrace, "", LevelTrace},
+		{formatHelper(logger.Tracef), TxtTrace, TxtTrace, "", LevelTrace},
 		{fatalFunc("-run=TestFatal"), TxtFatal, "", TxtFatal, LevelFatal},
 		{fatalFunc("-run=TestFatalf"), TxtFatal, "", TxtFatal, LevelFatal},
 		{fatalFunc("-run=TestFatalln"), TxtFatal, "", TxtFatal, LevelFatal},
@@ -83,7 +87,11 @@ func TestLogger(t *testing.T) {
 			stdout.Reset()
 			stderr.Reset()
 			currentLvl = LevelOff
-			l.SetLevel(currentLvl)
+			logger.Reset(&Options{
+				Stderr: &stderr,
+				Stdout: &stdout,
+				Level:  currentLvl,
+			})
 			tc.fn(tc.txt)
 			if want, got := "", strings.TrimRight(stdout.String(), "\n"); want != got {
 				t.Errorf("want %s, got %s", want, got)
@@ -96,7 +104,11 @@ func TestLogger(t *testing.T) {
 			stdout.Reset()
 			stderr.Reset()
 			currentLvl = LevelAll ^ tc.lvl
-			l.SetLevel(currentLvl)
+			logger.Reset(&Options{
+				Stderr: &stderr,
+				Stdout: &stdout,
+				Level:  currentLvl,
+			})
 			tc.fn(tc.txt)
 			if want, got := "", strings.TrimRight(stdout.String(), "\n"); want != got {
 				t.Errorf("want %s, got %s", want, got)
@@ -109,7 +121,11 @@ func TestLogger(t *testing.T) {
 			stdout.Reset()
 			stderr.Reset()
 			currentLvl = tc.lvl
-			l.SetLevel(currentLvl)
+			logger.Reset(&Options{
+				Stderr: &stderr,
+				Stdout: &stdout,
+				Level:  currentLvl,
+			})
 			tc.fn(tc.txt)
 			if want, got := tc.stdout, strings.TrimRight(stdout.String(), "\n"); want != got {
 				t.Errorf("want %s, got %s", want, got)
@@ -122,25 +138,30 @@ func TestLogger(t *testing.T) {
 }
 
 func TestFatal(t *testing.T) {
-	l, txt := fatalHelper(t)
-	l.Fatal(txt)
+	logger, txt := fatalHelper(t)
+	logger.Fatal(txt)
 }
 
 func TestFatalf(t *testing.T) {
-	l, txt := fatalHelper(t)
-	l.Fatalf("%s", txt)
+	logger, txt := fatalHelper(t)
+	logger.Fatalf("%s", txt)
 }
 
 func TestFatalln(t *testing.T) {
-	l, txt := fatalHelper(t)
-	l.Fatalln(txt)
+	logger, txt := fatalHelper(t)
+	logger.Fatalln(txt)
 }
 
 func TestCaller(t *testing.T) {
-	var stdout, stderr strings.Builder
-	l := New(&stdout, &stderr, log.Lshortfile, LevelDebug)
-	l.Debug("")
-	if want, got := "logger_test.go:142: \n", stdout.String(); want != got {
+	var stderr, stdout strings.Builder
+	logger := New(&Options{
+		Stderr: &stderr,
+		Stdout: &stdout,
+		Flag:   log.Lshortfile,
+		Level:  LevelDebug,
+	})
+	logger.Debug("")
+	if want, got := "logger_test.go:163: \n", stdout.String(); want != got {
 		t.Errorf("want %s, got %s", want, got)
 	}
 }
@@ -153,8 +174,12 @@ func fatalHelper(t *testing.T) (*Logger, string) {
 	txt := os.Getenv("TEXT")
 	lvl, _ := strconv.ParseUint(ll, 10, 8)
 
-	l := New(os.Stdout, os.Stderr, 0, uint8(lvl))
-	return l, txt
+	logger := New(&Options{
+		Stderr: os.Stderr,
+		Stdout: os.Stdout,
+		Level:  Level(lvl),
+	})
+	return logger, txt
 }
 
 func formatHelper(fn func(string, ...interface{})) func(...interface{}) {

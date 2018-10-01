@@ -1,1 +1,1 @@
-module github.com/gbrlsnchs/logger
+module github.com/gbrlsnchs/logwrap

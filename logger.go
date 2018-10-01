@@ -1,39 +1,9 @@
-package logger
+package logwrap
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"os"
-)
-
-// LevelOff alone turns all logs off.
-//
-// LevelAll turns all logs on whenever present in the
-// log level caculation.
-//
-// Log levels' bits are or'ed together,
-// so, regardless of the order they appear in the caculation,
-// if they're present in it, they're turned on.
-//
-// For example, to turn only Fatal e Debug levels on,
-// the level should be set the following way:
-// 	l := logger.New(os.Stdout, os.Stderr, log.LstdFlags, logger.LevelFatal|logger.LevelDebug)
-// To turn all levels off:
-// 	l := logger.New(os.Stdout, os.Stderr, log.LstdFlags, logger.LevelOff)
-// To turn all levels on:
-// 	l := logger.New(os.Stdout, os.Stderr, log.LstdFlags, logger.LevelAll)
-// All but Debug:
-// 	l := logger.New(os.Stdout, os.Stderr, log.LstdFlags, logger.LevelAll^logger.LevelDebug)
-const (
-	LevelOff uint8 = 1 << iota
-	LevelFatal
-	LevelError
-	LevelWarn
-	LevelInfo
-	LevelDebug
-	LevelTrace
-	LevelAll uint8 = 254
 )
 
 var (
@@ -52,20 +22,13 @@ type Logger struct {
 	infoLogger  *log.Logger
 	debugLogger *log.Logger
 	traceLogger *log.Logger
-	stdout      io.Writer
-	stderr      io.Writer
-	flag        int
 }
 
 // New creates a new logger according to the log level.
-func New(stdout, stderr io.Writer, flag int, lvl uint8) *Logger {
-	l := &Logger{
-		stdout: stdout,
-		stderr: stderr,
-		flag:   flag,
-	}
-	l.SetLevel(lvl)
-	return l
+func New(opt *Options) *Logger {
+	var logger Logger
+	logger.Reset(opt)
+	return &logger
 }
 
 func (l *Logger) Debug(v ...interface{}) {
@@ -155,26 +118,16 @@ func (l *Logger) Infoln(v ...interface{}) {
 	l.infoLogger.Output(2, fmt.Sprintln(v...))
 }
 
-func (l *Logger) SetLevel(lvl uint8) {
-	if lvl&LevelOff > 0 {
-		lvl = 0
+func (l *Logger) Reset(opt *Options) {
+	if opt.Level == 0 {
+		opt.Level = LevelOff
 	}
-	l.fatalLogger = build(lvl&LevelFatal, l.stderr, PrefixFatal, l.flag)
-	l.errLogger = build(lvl&LevelError, l.stderr, PrefixError, l.flag)
-	l.warnLogger = build(lvl&LevelWarn, l.stderr, PrefixWarn, l.flag)
-	l.infoLogger = build(lvl&LevelInfo, l.stdout, PrefixInfo, l.flag)
-	l.debugLogger = build(lvl&LevelDebug, l.stdout, PrefixDebug, l.flag)
-	l.traceLogger = build(lvl&LevelTrace, l.stdout, PrefixTrace, l.flag)
-}
-
-// Stderr returns the writer for error logs.
-func (l *Logger) Stderr() io.Writer {
-	return l.stderr
-}
-
-// Stdout returns the writer for ordinary logs.
-func (l *Logger) Stdout() io.Writer {
-	return l.stdout
+	l.fatalLogger = opt.build(LevelFatal)
+	l.errLogger = opt.build(LevelError)
+	l.warnLogger = opt.build(LevelWarn)
+	l.infoLogger = opt.build(LevelInfo)
+	l.debugLogger = opt.build(LevelDebug)
+	l.traceLogger = opt.build(LevelTrace)
 }
 
 func (l *Logger) Trace(v ...interface{}) {
