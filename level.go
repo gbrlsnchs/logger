@@ -1,8 +1,5 @@
 package logwrap
 
-// Level is a log level.
-type Level uint8
-
 // LevelOff alone turns all logs off.
 //
 // LevelAll turns all logs on whenever present in the
@@ -22,7 +19,7 @@ type Level uint8
 // All but Debug:
 // 	l := logger.New(os.Stdout, os.Stderr, log.LstdFlags, logger.LevelAll^logger.LevelDebug)
 const (
-	LevelOff Level = 1 << iota
+	LevelOff = 1 << iota
 	LevelFatal
 	LevelError
 	LevelWarn
