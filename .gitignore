@@ -1,1 +1,4 @@
 tags
+testdata/fatal/fatal
+testdata/fatalf/fatalf
+testdata/fatalln/fatalln
