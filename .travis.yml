@@ -10,16 +10,16 @@ go:
   - 'tip'
 
 env:
-  - 'BIN=go'
+  - 'GOBIN=go'
 install:
-  - 'if [ "$(go version | awk ''{print $3}'')" == "go1.10" ]; then go get -u golang.org/x/vgo && BIN=vgo; fi'
+  - 'if [ "$(go version | awk ''{print $3}'')" == "go1.10" ]; then go get -u golang.org/x/vgo && GOBIN=vgo; fi'
   - 'mkdir $HOME/test'
   - 'rsync -az $TRAVIS_BUILD_DIR/ $HOME/test/'
   # remove the project from GOPATH to mirror real use case
   - 'rm -rf $TRAVIS_BUILD_DIR'
   - 'cd $HOME/test'
 script:
-  - '$BIN build -o testdata/fatal/fatal testdata/fatal/fatal.go'
-  - '$BIN build -o testdata/fatalf/fatalf testdata/fatalf/fatalf.go'
-  - '$BIN build -o testdata/fatalln/fatalln testdata/fatalln/fatalln.go'
-  - '$BIN test -v -race -count=10'
+  - '$GOBIN build -o testdata/fatal/fatal testdata/fatal/fatal.go'
+  - '$GOBIN build -o testdata/fatalf/fatalf testdata/fatalf/fatalf.go'
+  - '$GOBIN build -o testdata/fatalln/fatalln testdata/fatalln/fatalln.go'
+  - '$GOBIN test -v -race -count=10'
