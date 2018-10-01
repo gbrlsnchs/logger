@@ -9,7 +9,6 @@ shallow_clone: true
 clone_folder: 'c:\test'
 
 test_script:
-  - 'gcc --version'
   - 'mkdir %GOPATH%'
   # Go 1.10
   - 'set GOROOT=c:\go110'

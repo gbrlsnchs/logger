@@ -9,16 +9,18 @@ go:
   - '1.11'
   - 'tip'
 
+environment:
+  - 'BIN=go'
+  - 'GOVERSION=$(go version | awk ''{print $3}'')'
 install:
-  - 'cd ${TRAVIS_HOME}/gopath'
-  - 'export GOVERSION=$(go version | awk ''{print $3}'')'
-  - 'echo $GOVERSION'
-  - 'if [ "$GOVERSION" == "go1.10" ]; then go get -u golang.org/x/vgo; fi'
+  - 'if [ "$GOVERSION" == "go1.10" ]; then go get -u golang.org/x/vgo && BIN=vgo; fi'
   - 'mkdir $HOME/test'
-  - 'rsync -az ${TRAVIS_BUILD_DIR}/ $HOME/test/'
+  - 'rsync -az $TRAVIS_BUILD_DIR/ $HOME/test/'
+  # remove the project from GOPATH to mirror real use case
+  - 'rm -rf $TRAVIS_BUILD_DIR'
   - 'cd $HOME/test'
 script:
-  - 'go build -o testdata/fatal/fatal testdata/fatal/fatal.go'
-  - 'go build -o testdata/fatalf/fatalf testdata/fatalf/fatalf.go'
-  - 'go build -o testdata/fatalln/fatalln testdata/fatalln/fatalln.go'
-  - 'if [ "$GOVERSION" == "go1.10" ]; then vgo test -v -race -count=10; else go test -v -race -count=10; fi'
+  - '$BIN build -o testdata/fatal/fatal testdata/fatal/fatal.go'
+  - '$BIN build -o testdata/fatalf/fatalf testdata/fatalf/fatalf.go'
+  - '$BIN build -o testdata/fatalln/fatalln testdata/fatalln/fatalln.go'
+  - '$BIN test -v -race -count=10'
