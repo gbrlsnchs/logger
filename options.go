@@ -13,13 +13,13 @@ type Options struct {
 	Prefixes map[Level]string
 }
 
-func (opt *Options) build(lvl Level) *log.Logger {
-	if opt.Level&LevelOff == 0 && opt.Level&lvl > 0 {
-		w := opt.Stderr
+func (o *Options) build(lvl Level) *log.Logger {
+	if o.Level&LevelOff == 0 && o.Level&lvl > 0 {
+		w := o.Stderr
 		if lvl >= LevelInfo {
-			w = opt.Stdout
+			w = o.Stdout
 		}
-		return log.New(w, opt.Prefixes[lvl], opt.Flag)
+		return log.New(w, o.Prefixes[lvl], o.Flag)
 	}
 	return nil
 }
