@@ -17,4 +17,8 @@ install:
   - 'mkdir $HOME/test'
   - 'rsync -az ${TRAVIS_BUILD_DIR}/ $HOME/test/'
   - 'cd $HOME/test'
-script: 'if [ "$GOVERSION" == "go1.10" ]; then vgo test -v -race -count=10; else go test -v -race -count=10; fi'
+script:
+  - 'go build -o testdata/fatal/fatal testdata/fatal/fatal.go'
+  - 'go build -o testdata/fatalf/fatalf testdata/fatalf/fatalf.go'
+  - 'go build -o testdata/fatalln/fatalln testdata/fatalln/fatalln.go'
+  - 'if [ "$GOVERSION" == "go1.10" ]; then vgo test -v -race -count=10; else go test -v -race -count=10; fi'
