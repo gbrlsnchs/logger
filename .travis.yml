@@ -1,15 +1,15 @@
 os:
   - 'linux'
   - 'osx'
-  - 'windows'
 sudo: false
 matrix:
   include:
     - os: 'windows'
       env: 'BIN_EXT=.exe'
-      go:
-        - '1.10'
-        - '1.11'
+      go: '1.10'
+    - os: 'windows'
+      env: 'BIN_EXT=.exe'
+      go: '1.11'
 
 language: 'go'
 go:
