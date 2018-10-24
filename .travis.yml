@@ -19,7 +19,7 @@ install:
   - 'mv ${TRAVIS_BUILD_DIR} ${TRAVIS_HOME}/test'
   - 'cd ${TRAVIS_HOME}/test'
 script:
-  - '$BIN build -o testdata/fatal/fatal${BIN_EXT} testdata/fatal/fatal.go'
-  - '$BIN build -o testdata/fatalf/fatalf${BIN_EXT} testdata/fatalf/fatalf.go'
-  - '$BIN build -o testdata/fatalln/fatalln${BIN_EXT} testdata/fatalln/fatalln.go'
-  - '$BIN test -v -race -count=10'
+  - '${BIN} build -o testdata/fatal/fatal${BIN_EXT} testdata/fatal/fatal.go'
+  - '${BIN} build -o testdata/fatalf/fatalf${BIN_EXT} testdata/fatalf/fatalf.go'
+  - '${BIN} build -o testdata/fatalln/fatalln${BIN_EXT} testdata/fatalln/fatalln.go'
+  - '${BIN} test -v -race -count=10'
