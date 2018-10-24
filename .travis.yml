@@ -3,21 +3,24 @@ os:
   - 'osx'
   - 'windows'
 sudo: false
+matrix:
+  include:
+    - os: 'windows'
+      env: 'BIN_EXT=.exe'
 
 language: 'go'
 go:
   - '1.10'
   - '1.11'
 
-env:
-  - 'BIN=go'
+env: 'BIN=go'
 install:
   - 'cd $GOPATH'
   - 'if [ "$(go version | awk ''{print $3}'')" == "go1.10" ]; then go get -u golang.org/x/vgo && BIN=vgo; fi'
   - 'mv ${TRAVIS_BUILD_DIR} ${TRAVIS_HOME}/test'
   - 'cd ${TRAVIS_HOME}/test'
 script:
-  - '$BIN build -o testdata/fatal/fatal testdata/fatal/fatal.go'
-  - '$BIN build -o testdata/fatalf/fatalf testdata/fatalf/fatalf.go'
-  - '$BIN build -o testdata/fatalln/fatalln testdata/fatalln/fatalln.go'
+  - '$BIN build -o testdata/fatal/fatal${BIN_EXT} testdata/fatal/fatal.go'
+  - '$BIN build -o testdata/fatalf/fatalf${BIN_EXT} testdata/fatalf/fatalf.go'
+  - '$BIN build -o testdata/fatalln/fatalln${BIN_EXT} testdata/fatalln/fatalln.go'
   - '$BIN test -v -race -count=10'
