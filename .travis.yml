@@ -1,21 +1,24 @@
 os:
   - 'linux'
   - 'osx'
+  - 'windows'
 sudo: false
 matrix:
   include:
     - os: 'windows'
       env: 'BIN_EXT=.exe'
+      go:
+        - '1.10'
+        - '1.11'
 
 language: 'go'
 go:
   - '1.10'
   - '1.11'
 
-env: 'BIN=go'
 install:
   - 'cd $GOPATH'
-  - 'if [ "$(go version | awk ''{print $3}'')" == "go1.10" ]; then go get -u golang.org/x/vgo && BIN=vgo; fi'
+  - 'if [ "$(go version | awk ''{print $3}'')" == "go1.10" ]; then go get -u golang.org/x/vgo && BIN=vgo; else BIN=go; fi'
   - 'mv ${TRAVIS_BUILD_DIR} ${TRAVIS_HOME}/test'
   - 'cd ${TRAVIS_HOME}/test'
 script:
